@@ -69,3 +69,9 @@ h4 {
 .confirm-modal .deny {
   background: #b5261cd6;
 }
+
+.green-bg {
+  background: #39d639;
+  border-radius: 25px;
+  padding: 20px;
+}
