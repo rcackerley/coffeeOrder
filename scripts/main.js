@@ -7,10 +7,12 @@ var modal = document.querySelector('.modal');
 var completedButton = document.querySelector('.confirm')
 var notCompletedButton = document.querySelector('.deny')
 var orderCompleted = function (event) {
+  var activeCheckbox = event.target;
   var removeOrder = function (event) {
     var orderToBeDeleted = activeCheckbox.closest('.order');
     console.log(orderToBeDeleted);
     var orderToBeDeletedParent = orderToBeDeleted.closest('.panel-body');
+    console.log(orderToBeDeletedParent);
     var totalOrders = orderToBeDeletedParent.querySelectorAll('.order');
     totalOrders.forEach(function(element, i){
       if (element === orderToBeDeleted) {
@@ -19,42 +21,16 @@ var orderCompleted = function (event) {
     })
     orderToBeDeletedParent.removeChild(orderToBeDeleted);
     toggleModal();
-    savedData();
+    saveData();
   }
   if (this.checked) {
     toggleModal();
-    var activeCheckbox = event.target;
-    console.log(activeCheckbox);
     completedButton.addEventListener('click', removeOrder);
     notCompletedButton.addEventListener('click', toggleModal);
     var checkboxes = document.querySelectorAll('[type=checkbox]');
     for (i = 0; i < checkboxes.length; i++) {
       checkboxes[i].checked = false;
     }
-  }
-}
-
-var renderOrder = function() {
-  var priorOrderHeader = document.createElement('h5');
-  var orderCheckbox = document.createElement('input');
-  orderCheckbox.setAttribute('type', 'checkbox');
-  orderCheckbox.addEventListener('change', orderCompleted);
-  priorOrderHeader.textContent = 'Order: ' + coffeeOrders.length;
-  var orderWrapper = document.createElement('div');
-  orderWrapper.classList.add('order')
-  var orderCompleter = document.createElement('div');
-  orderCompleter.classList.add('orderCheckedWrapper')
-  orderWrapper.appendChild(orderCompleter);
-  priorOrderPanel.appendChild(orderWrapper);
-  console.log(priorOrderPanel.querySelectorAll('.orderCheckedWrapper'));
-  console.log(coffeeOrders.length - 1);
-  priorOrderPanel.querySelectorAll('.orderCheckedWrapper')[coffeeOrders.length - 1].appendChild(orderCheckbox);
-  priorOrderPanel.querySelectorAll('.orderCheckedWrapper')[coffeeOrders.length - 1].appendChild(priorOrderHeader);
-  priorOrderPanel.querySelectorAll('.order')[coffeeOrders.length - 1].appendChild(document.createElement('ul'));
-  for (var property in newOrder) {
-    var priorOrderStat = document.createElement('li');
-    priorOrderStat.textContent = property + ': ' + newOrder[property];
-    document.querySelectorAll('ul')[coffeeOrders.length - 1].appendChild(priorOrderStat);
   }
 }
 
@@ -69,9 +45,32 @@ var formSubmission = function() {
   };
   coffeeOrders.push(newOrder);
   // successIcon.classList.toggle('hidden');
-  renderOrder()
+  renderOrder(newOrder);
   saveData();
   form.reset();
+}
+
+var renderOrder = function(newOrder) {
+  var orderWrapper = document.createElement('div');
+  var orderCompleter = document.createElement('div');
+  var priorOrderHeader = document.createElement('h5');
+  var orderCheckbox = document.createElement('input');
+  orderCheckbox.setAttribute('type', 'checkbox');
+  orderCheckbox.addEventListener('change', orderCompleted);
+  priorOrderHeader.textContent = 'Order: ' + coffeeOrders.length;
+  orderWrapper.classList.add('order')
+  orderCompleter.classList.add('orderCheckedWrapper')
+  orderCompleter.setAttribute('data-id', coffeeOrders.length - 1);
+  orderWrapper.appendChild(orderCompleter);
+  priorOrderPanel.appendChild(orderWrapper);
+  priorOrderPanel.querySelectorAll('.orderCheckedWrapper')[orderCompleter.getAttribute('data-id')].appendChild(orderCheckbox);
+  priorOrderPanel.querySelectorAll('.orderCheckedWrapper')[coffeeOrders.length - 1].appendChild(priorOrderHeader);
+  priorOrderPanel.querySelectorAll('.order')[coffeeOrders.length - 1].appendChild(document.createElement('ul'));
+  for (var property in newOrder) {
+    var priorOrderStat = document.createElement('li');
+    priorOrderStat.textContent = property + ': ' + newOrder[property];
+    document.querySelectorAll('ul')[coffeeOrders.length - 1].appendChild(priorOrderStat);
+  }
 }
 
 var toggleModal = function() {
@@ -86,4 +85,10 @@ var saveData = function() {
 
 form.addEventListener('submit', formSubmission);
 var loadedData = JSON.parse(localStorage.getItem('orders'));
-coffeeOrders = loadedData;
+if (loadedData != null) {
+    coffeeOrders = loadedData;
+    for (var i = 0; i < coffeeOrders.length; i++) {
+      console.log(coffeeOrders[i]);
+      renderOrder(coffeeOrders[i]);
+    }
+}
