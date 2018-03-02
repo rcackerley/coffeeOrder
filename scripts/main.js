@@ -12,6 +12,7 @@ var notCompletedButton = document.querySelector('.deny')
 var orderCompleted = function (event) {
   var activeCheckbox = event.target;
   var removeOrder = function (event) {
+    event.preventDefault();
     var orderToBeDeleted = activeCheckbox.closest('.order');
     var idForDeletion = orderToBeDeleted.querySelector('.orderCheckedWrapper').getAttribute('data-id');
     var emailForDeletion = coffeeOrders[idForDeletion].emailAddress;
@@ -28,11 +29,11 @@ var orderCompleted = function (event) {
     console.log(orderToBeDeleted);
     orderToBeDeleted.classList.add('green-bg');
     setTimeout(function() {orderToBeDeletedParent.removeChild(orderToBeDeleted)}, 2000);
-    toggleModal();
+    toggleModal(event);
     deleteData(emailForDeletion);
   }
   if (this.checked) {
-    toggleModal();
+    toggleModal(event);
     completedButton.addEventListener('click', removeOrder);
     notCompletedButton.addEventListener('click', toggleModal);
     var checkboxes = document.querySelectorAll('[type=checkbox]');
@@ -100,7 +101,8 @@ var renderOrder = function(newOrder, iterator) {
   })
 }
 
-var toggleModal = function() {
+var toggleModal = function(event) {
+  event.preventDefault();
   modal.classList.toggle('hidden');
 }
 
