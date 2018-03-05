@@ -120,21 +120,20 @@ var saveData = function(newOrder) {
   });
 }
 
-var sortObject = function(a,b) {
-
+var loadData = function() {
+  var orderObjectToBeParsed
+  var loadedData = $.get('http://dc-coffeerun.herokuapp.com/api/coffeeorders', function(data) {
+    orderObjectToBeParsed = data;
+    for (var order1 in orderObjectToBeParsed) {
+      coffeeOrders.push(orderObjectToBeParsed[order1]);
+    };
+    if (coffeeOrders.length > 0) {
+        for (var i = 0; i < coffeeOrders.length; i++) {
+          renderOrder(coffeeOrders[i], i);
+        }
+    }
+  });
 }
 
-
 form.addEventListener('submit', formSubmission);
-var orderObjectToBeParsed
-var loadedData = $.get('http://dc-coffeerun.herokuapp.com/api/coffeeorders', function(data) {
-  orderObjectToBeParsed = data;
-  for (var order1 in orderObjectToBeParsed) {
-    coffeeOrders.push(orderObjectToBeParsed[order1]);
-  };
-  if (coffeeOrders.length > 0) {
-      for (var i = 0; i < coffeeOrders.length; i++) {
-        renderOrder(coffeeOrders[i], i);
-      }
-  }
-});
+loadData();
