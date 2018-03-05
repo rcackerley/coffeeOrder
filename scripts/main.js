@@ -8,6 +8,14 @@ var modal = document.querySelector('.modal');
 var completedButton = document.querySelector('.confirm')
 var notCompletedButton = document.querySelector('.deny')
 
+// var promiseGenerator = function(actionToBeTaken) {
+//   var promise = new Promise(actionToBeTaken(resolve));
+// };
+//
+// var timeOut = function(resolve, ms) {
+//
+// }
+
 //function to remove an order after it has been completed
 var orderCompleted = function (event) {
   var activeCheckbox = event.target;
@@ -28,7 +36,13 @@ var orderCompleted = function (event) {
     });
     console.log(orderToBeDeleted);
     orderToBeDeleted.classList.add('green-bg');
-    setTimeout(function() {orderToBeDeletedParent.removeChild(orderToBeDeleted)}, 2000);
+    var promise = new Promise(function(resolve) {
+      setTimeout(resolve, 2000);
+      console.log(resolve);
+    });
+    promise.then(function() {
+      orderToBeDeletedParent.removeChild(orderToBeDeleted);
+    })
     toggleModal(event);
     deleteData(emailForDeletion);
   }
@@ -120,13 +134,31 @@ var saveData = function(newOrder) {
   });
 }
 
+// var loadData = function() {
+//   var orderObjectToBeParsed
+//   var loadedData = $.get('http://dc-coffeerun.herokuapp.com/api/coffeeorders', function(data) {
+//     orderObjectToBeParsed = data;
+//     for (var order1 in orderObjectToBeParsed) {
+//       coffeeOrders.push(orderObjectToBeParsed[order1]);
+//     };
+//     if (coffeeOrders.length > 0) {
+//         for (var i = 0; i < coffeeOrders.length; i++) {
+//           renderOrder(coffeeOrders[i], i);
+//         }
+//     }
+//   });
+// }
+
 var loadData = function() {
   var orderObjectToBeParsed
-  var loadedData = $.get('http://dc-coffeerun.herokuapp.com/api/coffeeorders', function(data) {
-    orderObjectToBeParsed = data;
-    for (var order1 in orderObjectToBeParsed) {
-      coffeeOrders.push(orderObjectToBeParsed[order1]);
+  var loadedData = $.get('http://dc-coffeerun.herokuapp.com/api/coffeeorders')
+    loadedData.then(function(data) {
+      console.log(data);
+      orderObjectToBeParsed = data;
+      for (var order1 in orderObjectToBeParsed) {
+        coffeeOrders.push(orderObjectToBeParsed[order1]);
     };
+
     if (coffeeOrders.length > 0) {
         for (var i = 0; i < coffeeOrders.length; i++) {
           renderOrder(coffeeOrders[i], i);
