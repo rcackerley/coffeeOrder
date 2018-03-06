@@ -24,6 +24,7 @@ var orderCompleted = function (event) {
     var orderToBeDeleted = activeCheckbox.closest('.order');
     var idForDeletion = orderToBeDeleted.querySelector('.orderCheckedWrapper').getAttribute('data-id');
     var emailForDeletion = coffeeOrders[idForDeletion].emailAddress;
+    // var orderPassed = coffeeOrders[idForDeletion];
     console.log(emailForDeletion);
     // console.log(orderToBeDeleted);
     var orderToBeDeletedParent = orderToBeDeleted.closest('.panel-body');
@@ -121,50 +122,44 @@ var toggleModal = function(event) {
 }
 
 var deleteData = function(email) {
-  $.ajax({
-    url: 'http://dc-coffeerun.herokuapp.com/api/coffeeorders/' + email,
-    type: 'DELETE',
-  });
+  var promise = fetch('http://dc-coffeerun.herokuapp.com/api/coffeeorders' + email, {
+    method: 'DELETE',
+  })
 }
 
-var saveData = function(newOrder) {
-    newOrder.strength = Number(newOrder.strength);
-  $.post('http://dc-coffeerun.herokuapp.com/api/coffeeorders', newOrder, function() {
-    console.log(newOrder);
-  });
-}
-
-// var loadData = function() {
-//   var orderObjectToBeParsed
-//   var loadedData = $.get('http://dc-coffeerun.herokuapp.com/api/coffeeorders', function(data) {
-//     orderObjectToBeParsed = data;
-//     for (var order1 in orderObjectToBeParsed) {
-//       coffeeOrders.push(orderObjectToBeParsed[order1]);
-//     };
-//     if (coffeeOrders.length > 0) {
-//         for (var i = 0; i < coffeeOrders.length; i++) {
-//           renderOrder(coffeeOrders[i], i);
-//         }
-//     }
+// var deleteData = function(email) {
+//   $.ajax({
+//     url: 'http://dc-coffeerun.herokuapp.com/api/coffeeorders/' + email,
+//     type: 'DELETE',
 //   });
 // }
 
-var loadData = function() {
-  var orderObjectToBeParsed
-  var loadedData = $.get('http://dc-coffeerun.herokuapp.com/api/coffeeorders')
-    loadedData.then(function(data) {
-      console.log(data);
-      orderObjectToBeParsed = data;
-      for (var order1 in orderObjectToBeParsed) {
-        coffeeOrders.push(orderObjectToBeParsed[order1]);
-    };
+var saveData = function(newOrder) {
+    newOrder.strength = Number(newOrder.strength);
+    var promise = fetch('http://dc-coffeerun.herokuapp.com/api/coffeeorders', {
+      method: 'POST',
+      body: JSON.stringify(newOrder),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      })
+    })
+}
 
-    if (coffeeOrders.length > 0) {
-        for (var i = 0; i < coffeeOrders.length; i++) {
-          renderOrder(coffeeOrders[i], i);
-        }
-    }
-  });
+var loadData = function() {
+  var loadedData = fetch('http://dc-coffeerun.herokuapp.com/api/coffeeorders')
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(json) {
+      Object.values(json);
+      coffeeOrders = Object.values(json)
+      console.log(coffeeOrders);
+      if (coffeeOrders.length > 0) {
+          for (var i = 0; i < coffeeOrders.length; i++) {
+            renderOrder(coffeeOrders[i], i);
+          }
+      }
+    });
 }
 
 form.addEventListener('submit', formSubmission);
